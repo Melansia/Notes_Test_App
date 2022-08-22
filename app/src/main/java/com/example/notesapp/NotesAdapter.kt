@@ -20,7 +20,14 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
         notesViewHolder.tvTitle.text = note.title
         notesViewHolder.tvDescription.text = note.description
         notesViewHolder.tvDayOfWeek.text = note.dayOfWeek
-        notesViewHolder.tvPriority.text = String.format("%s", note.priority)
+        var colorId = 0
+        val priority = note.priority
+        when(priority) {
+            1 -> colorId = notesViewHolder.itemView.resources.getColor(android.R.color.holo_red_light)
+            2 -> colorId = notesViewHolder.itemView.resources.getColor(android.R.color.holo_orange_light)
+            3 -> colorId = notesViewHolder.itemView.resources.getColor(android.R.color.holo_green_light)
+        }
+        notesViewHolder.tvTitle.setBackgroundColor(colorId)
     }
 
     override fun getItemCount(): Int {
@@ -32,13 +39,11 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
         val tvTitle: TextView
         val tvDescription: TextView
         val tvDayOfWeek: TextView
-        val tvPriority: TextView
 
         init {
             tvTitle = itemView.findViewById(R.id.tvTitle)
             tvDescription = itemView.findViewById(R.id.tvDescription)
             tvDayOfWeek = itemView.findViewById(R.id.tvDayOfWeek)
-            tvPriority = itemView.findViewById(R.id.tvPriority)
         }
     }
 }
