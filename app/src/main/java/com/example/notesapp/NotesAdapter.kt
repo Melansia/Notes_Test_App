@@ -15,6 +15,17 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
         return NotesViewHolder(view)
     }
 
+    private var onNoteClickListener: OnNoteClickListener? = null
+
+    interface OnNoteClickListener {
+        fun onNoteClick(position: Int)
+        fun onLongClick(position: Int)
+    }
+
+    fun setOnNoteClickListener(onNoteClickListener: OnNoteClickListener?) {
+        this.onNoteClickListener = onNoteClickListener
+    }
+
     override fun onBindViewHolder(notesViewHolder: NotesViewHolder, i: Int) {
         val note = notes[i]
         notesViewHolder.tvTitle.text = note.title
@@ -22,10 +33,13 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
         notesViewHolder.tvDayOfWeek.text = note.dayOfWeek
         var colorId = 0
         val priority = note.priority
-        when(priority) {
-            1 -> colorId = notesViewHolder.itemView.resources.getColor(android.R.color.holo_red_light)
-            2 -> colorId = notesViewHolder.itemView.resources.getColor(android.R.color.holo_orange_light)
-            3 -> colorId = notesViewHolder.itemView.resources.getColor(android.R.color.holo_green_light)
+        when (priority) {
+            1 -> colorId =
+                notesViewHolder.itemView.resources.getColor(android.R.color.holo_red_light)
+            2 -> colorId =
+                notesViewHolder.itemView.resources.getColor(android.R.color.holo_orange_light)
+            3 -> colorId =
+                notesViewHolder.itemView.resources.getColor(android.R.color.holo_green_light)
         }
         notesViewHolder.tvTitle.setBackgroundColor(colorId)
     }
@@ -36,6 +50,7 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
 
     inner class NotesViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
+        //    super(itemView)
         val tvTitle: TextView
         val tvDescription: TextView
         val tvDayOfWeek: TextView
@@ -44,6 +59,11 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
             tvTitle = itemView.findViewById(R.id.tvTitle)
             tvDescription = itemView.findViewById(R.id.tvDescription)
             tvDayOfWeek = itemView.findViewById(R.id.tvDayOfWeek)
+            itemView.setOnClickListener { onNoteClickListener?.onNoteClick(adapterPosition) }
+            itemView.setOnLongClickListener {
+                onNoteClickListener?.onLongClick(adapterPosition)
+                true
+            }
         }
     }
 }
