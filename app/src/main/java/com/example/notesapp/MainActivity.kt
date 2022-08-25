@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 open class MainActivity : AppCompatActivity() {
 
     private lateinit var rvNotes: RecyclerView
-    val notes: ArrayList<Note> = ArrayList()
+    private val notes: ArrayList<Note> = ArrayList()
     private lateinit var adapter: NotesAdapter
     private lateinit var dbHelper: NotesDBHelper
 
@@ -29,40 +29,11 @@ open class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        rvNotes = findViewById(R.id.rvNotes)
         dbHelper = NotesDBHelper(this)
         val database: SQLiteDatabase = dbHelper.writableDatabase
+//        database.delete(NotesContract.NotesEntry.TABLE_NAME, null, null)
 
-        rvNotes = findViewById(R.id.rvNotes)
-
-//        if (notes.isEmpty()) {
-//            notes.add(Note("Market", "Buy stuff for lemonade", "Sunday", 2))
-//            notes.add(Note("Dentist", "Call Vasilis to close a visit", "Monday", 3))
-//            notes.add(Note("Skroutz", "Pick up Moms Tablet", "Tuesday", 2))
-//            notes.add(Note("Sea", "Trip to Voliagmenis Lake", "Wednesday", 3))
-//            notes.add(Note("Market", "Buy Coffee", "Thursday", 2))
-//            notes.add(Note("Monastiraki", "Meet with Petir", "Friday", 1))
-//            notes.add(Note("Syntagma", "Check for Games", "Saturday", 1))
-//        }
-
-//        if (intent != null && intent.hasExtra("EXTRA_PRIORITY")) {
-//            title = intent.getStringExtra("EXTRA_TITLE").toString()
-//            description = intent.getStringExtra("EXTRA_DESCRIPTION").toString()
-//            dayOfWeek = intent.getStringExtra("EXTRA_WEEKDAY").toString()
-//            priority = intent.getIntExtra("EXTRA_PRIORITY", 1)
-//            val note = Note(title, description, dayOfWeek, priority)
-//            notes.add(note)
-//        }
-
-        for (note in notes) {
-            val contentValues = ContentValues()
-            contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, note.title)
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, note.description)
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, note.dayOfWeek)
-            contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, note.priority)
-            database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues)
-        }
-
-        val notesFromDB = ArrayList<Note>()
         val cursor =
             database.query(NotesContract.NotesEntry.TABLE_NAME, null, null, null, null, null, null)
         while (cursor.moveToNext()) {
@@ -71,11 +42,11 @@ open class MainActivity : AppCompatActivity() {
             val dayOfWeek = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK))
             val priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY))
             val note = Note(title, description,dayOfWeek,priority)
-            notesFromDB.add(note)
+            notes.add(note)
         }
         cursor.close()
 
-        adapter = NotesAdapter(notesFromDB)
+        adapter = NotesAdapter(notes)
         rvNotes.layoutManager = LinearLayoutManager(this)
         rvNotes.adapter = adapter
 
