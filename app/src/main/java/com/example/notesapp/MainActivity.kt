@@ -1,7 +1,6 @@
 package com.example.notesapp
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
@@ -18,6 +17,7 @@ open class MainActivity : AppCompatActivity() {
     private val notes: ArrayList<Note> = ArrayList()
     private lateinit var adapter: NotesAdapter
     private lateinit var dbHelper: NotesDBHelper
+    private lateinit var database: SQLiteDatabase
 
 
     private lateinit var title: String
@@ -25,26 +25,15 @@ open class MainActivity : AppCompatActivity() {
     private lateinit var dayOfWeek: String
     private var priority: Int = 3
 
-    @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        this@MainActivity.supportActionBar?.hide()
+
         rvNotes = findViewById(R.id.rvNotes)
         dbHelper = NotesDBHelper(this)
-        val database: SQLiteDatabase = dbHelper.writableDatabase
-//        database.delete(NotesContract.NotesEntry.TABLE_NAME, null, null)
-
-        val cursor =
-            database.query(NotesContract.NotesEntry.TABLE_NAME, null, null, null, null, null, null)
-        while (cursor.moveToNext()) {
-            val title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE))
-            val description = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DESCRIPTION))
-            val dayOfWeek = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK))
-            val priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY))
-            val note = Note(title, description,dayOfWeek,priority)
-            notes.add(note)
-        }
-        cursor.close()
+        database = dbHelper.writableDatabase
+        getData()
 
         adapter = NotesAdapter(notes)
         rvNotes.layoutManager = LinearLayoutManager(this)
@@ -83,12 +72,33 @@ open class MainActivity : AppCompatActivity() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun remove(position: Int) {
-        notes.removeAt(position)
+        val id = notes[position].id
+        val where = NotesContract.NotesEntry._ID + " = ?"
+        val whereArgs = arrayOf(id.toString())
+        database.delete(NotesContract.NotesEntry.TABLE_NAME, where, whereArgs)
+        getData()
         adapter.notifyDataSetChanged()
     }
 
     fun onClickAddNote(view: View) {
         val intent = Intent(this, AddNoteActivity::class.java)
         startActivity(intent)
+    }
+
+    @SuppressLint("Range")
+    private fun getData() {
+        notes.clear()
+        val cursor =
+            database.query(NotesContract.NotesEntry.TABLE_NAME, null, null, null, null, null, NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK)
+        while (cursor.moveToNext()) {
+            val id = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry._ID))
+            val title = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_TITLE))
+            val description = cursor.getString(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DESCRIPTION))
+            val dayOfWeek = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK))
+            val priority = cursor.getInt(cursor.getColumnIndex(NotesContract.NotesEntry.COLUMN_PRIORITY))
+            val note = Note(id, title, description,dayOfWeek,priority)
+            notes.add(note)
+        }
+        cursor.close()
     }
 }

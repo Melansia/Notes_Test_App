@@ -30,7 +30,7 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
         val note = notes[i]
         notesViewHolder.tvTitle.text = note.title
         notesViewHolder.tvDescription.text = note.description
-        notesViewHolder.tvDayOfWeek.text = note.dayOfWeek
+        notesViewHolder.tvDayOfWeek.text = note.getDayAsString(note.dayOfWeek)
         var colorId = 0
         val priority = note.priority
         when (priority) {

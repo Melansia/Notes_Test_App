@@ -23,6 +23,8 @@ class AddNoteActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_note)
+        this@AddNoteActivity.supportActionBar?.hide()
+
         dbHelper = NotesDBHelper(this)
         database = dbHelper.writableDatabase
 
@@ -36,21 +38,17 @@ class AddNoteActivity : AppCompatActivity() {
         btnSaveNote.setOnClickListener {
             val title = edTitle.text.toString().trim()
             val description = edDescription.text.toString().trim()
-            val dayOfWeek = spinnerDaysOfWeek.selectedItem.toString()
+            val dayOfWeek = spinnerDaysOfWeek.selectedItemPosition
             val radioButtonID = findViewById<RadioButton>(rgPriority.checkedRadioButtonId)
             val priority = radioButtonID.text.toString().toInt()
             if (isField(title, description)) {
                 val contentValues = ContentValues()
                 contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, title)
                 contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, description)
-                contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek)
+                contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek + 1)
                 contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, priority)
                 database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues)
                 val intent = Intent(this, MainActivity::class.java)
-//            intent.putExtra("EXTRA_TITLE", title)
-//            intent.putExtra("EXTRA_DESCRIPTION", description)
-//            intent.putExtra("EXTRA_WEEKDAY", dayOfWeek)
-//            intent.putExtra("EXTRA_PRIORITY", priority)
                 startActivity(intent)
             } else {
                 Toast.makeText(this, getString(R.string.warning_fill_filds), Toast.LENGTH_SHORT).show()

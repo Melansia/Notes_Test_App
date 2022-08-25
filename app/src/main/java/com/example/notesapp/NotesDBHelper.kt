@@ -10,7 +10,7 @@ class NotesDBHelper(
 
     companion object {
         private val DB_NAME = "notes.db"
-        private val DB_VERSION = 1
+        private val DB_VERSION = 2
     }
 
     override fun onCreate(p0: SQLiteDatabase?) {
