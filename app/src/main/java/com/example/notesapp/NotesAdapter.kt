@@ -1,5 +1,6 @@
 package com.example.notesapp
 
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,14 +33,16 @@ class NotesAdapter(private val notes: ArrayList<Note>) :
         notesViewHolder.tvDescription.text = note.description
         notesViewHolder.tvDayOfWeek.text = note.getDayAsString(note.dayOfWeek)
         var colorId = 0
-        val priority = note.priority
-        when (priority) {
-            1 -> colorId =
-                notesViewHolder.itemView.resources.getColor(android.R.color.holo_red_light)
-            2 -> colorId =
-                notesViewHolder.itemView.resources.getColor(android.R.color.holo_orange_light)
-            3 -> colorId =
-                notesViewHolder.itemView.resources.getColor(android.R.color.holo_green_light)
+        when (note.priority) {
+            1 -> colorId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                notesViewHolder.itemView.context.getColor(android.R.color.holo_red_light)
+            } else notesViewHolder.itemView.resources.getColor(android.R.color.holo_red_light)
+            2 -> colorId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                notesViewHolder.itemView.context.getColor(android.R.color.holo_orange_light)
+            } else notesViewHolder.itemView.resources.getColor(android.R.color.holo_orange_light)
+            3 -> colorId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                notesViewHolder.itemView.context.getColor(android.R.color.holo_green_light)
+            } else notesViewHolder.itemView.resources.getColor(android.R.color.holo_green_light)
         }
         notesViewHolder.tvTitle.setBackgroundColor(colorId)
     }

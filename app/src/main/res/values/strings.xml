@@ -8,6 +8,7 @@
     <string name="priority_3">3</string>
     <string name="button_save_note">Save Note</string>
     <string name="warning_fill_filds">Fields must not be empty!</string>
+    <string name="button_add">Button Add</string>
 
     <string-array name="days_of_week">
         <item>Sunday</item>
